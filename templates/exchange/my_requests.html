@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}My requests{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><span class="eyebrow">Request tracking</span><h1>My requests</h1><p>Track requests you have sent and review requests received for your listings.</p></div></section>
+<section class="section"><div class="container requests-columns">
+  <section class="panel"><div class="panel-heading"><div><span class="eyebrow">Your activity</span><h2>Requests submitted</h2></div></div>
+    {% if submitted %}<div class="activity-list">{% for item in submitted %}<article class="activity-row request-row"><span class="activity-icon activity-blue">♡</span><div class="activity-main"><b>{{ item.listing.name }}</b><small>{{ item.created_at|date:"M j, Y" }} · Qty {{ item.quantity }} · {{ item.listing.city }}</small></div><span class="status status-{{ item.status }}">{{ item.get_status_display }}</span>{% if item.status == "pending_review" or item.status == "submitted" %}<form method="post" action="{% url 'cancel_request' item.pk %}" data-confirm="Cancel this request?">{% csrf_token %}<button class="button button-quiet button-small" type="submit">Cancel</button></form>{% endif %}</article>{% endfor %}</div>{% else %}<div class="empty-state"><span>♡</span><p>You haven't requested a listing yet.</p><a class="text-link" href="{% url 'discover' %}">Explore eligible listings →</a></div>{% endif %}
+  </section>
+  <section class="panel"><div class="panel-heading"><div><span class="eyebrow">Community activity</span><h2>Requests received</h2></div></div>
+    {% if received %}<div class="activity-list">{% for item in received %}<article class="activity-row"><span class="activity-icon">↔</span><div class="activity-main"><b>{{ item.listing.name }}</b><small>{{ item.created_at|date:"M j, Y" }} · Qty {{ item.quantity }} · Requester: {{ item.requester.get_full_name|default:item.requester.email }}</small></div><span class="status status-{{ item.status }}">{{ item.get_status_display }}</span></article>{% endfor %}</div>{% else %}<div class="empty-state"><span>↔</span><p>No requests have been received.</p></div>{% endif %}
+  </section>
+  <div class="notice notice-blue requests-notice"><b>Requests are not transfers.</b><span>Only an authorized reviewer can reserve eligible inventory. This MVP does not provide prescriptions, medical recommendations or public contact details.</span></div>
+</div></section>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Report a concern{% endblock %}
+{% block content %}
+<section class="auth-section"><div class="auth-card"><span class="eyebrow">Help protect the community</span><h1>Report a safety concern</h1><p>Listing: <b>{{ listing.name }}</b>. Reports are visible to platform administrators.</p>
+  <form method="post" class="form-stack">{% csrf_token %}{% for field in form %}<div class="field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.errors %}<div class="field-error">{{ field.errors }}</div>{% endif %}</div>{% endfor %}<button class="button button-primary button-full" type="submit">Send report</button></form>
+</div></section>
+{% endblock %}

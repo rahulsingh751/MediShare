@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Saved medicines{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><span class="eyebrow">Your saved items</span><h1>Saved medicines</h1><p>Keep track of reviewed listings that may be useful to revisit.</p></div></section>
+<section class="section"><div class="container">
+  {% if saved_medicines %}<div class="listing-grid">{% for saved in saved_medicines %}<article class="listing-card"><div class="listing-photo listing-photo-placeholder"><span>✚</span><small>{{ saved.listing.city }}</small></div><div class="listing-card-body"><span class="status status-{{ saved.listing.status }}">{{ saved.listing.get_status_display }}</span><h2>{{ saved.listing.name }}</h2><p class="listing-subtitle">{{ saved.listing.strength }}</p><p class="listing-meta">Expires {{ saved.listing.expiry_date|date:"M Y" }}</p><a class="button button-outline button-full" href="{% url 'listing_detail' saved.listing.pk %}">View listing →</a><form method="post" action="{% url 'save_listing' saved.listing.pk %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}"><button class="button button-quiet button-full" type="submit">Remove saved item</button></form></div></article>{% endfor %}</div>
+  {% else %}<div class="empty-state empty-large"><span>♡</span><h2>Your saved list is empty</h2><p>Save eligible listings to find them again easily.</p><a class="button button-outline" href="{% url 'discover' %}">Discover listings</a></div>{% endif %}
+</div></section>
+{% endblock %}

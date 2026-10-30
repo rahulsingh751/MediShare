@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Discover medicines{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container"><span class="eyebrow">Discover responsibly</span><h1>Search reviewed listings.</h1><p>Only eligible, reviewed and currently available submissions are shown. No listing is a medical recommendation.</p></div>
+</section>
+<section class="section discovery-section">
+  <div class="container">
+    <form class="search-panel" method="get" action="{% url 'discover' %}">
+      <div class="search-input-wrap"><label class="sr-only" for="medicine-search">Medicine name, brand, ingredient or strength</label><span aria-hidden="true">⌕</span><input id="medicine-search" name="q" value="{{ query }}" placeholder="Medicine name, brand, ingredient or strength" autocomplete="off" data-suggestions-url="{% url 'search_suggestions' %}" aria-autocomplete="list" aria-controls="search-suggestions"><div id="search-suggestions" class="suggestions" role="listbox" hidden></div></div>
+      <label class="sr-only" for="city-filter">City</label><input id="city-filter" class="filter-input" name="city" value="{{ city }}" placeholder="City">
+      <label class="sr-only" for="pincode-filter">PIN code</label><input id="pincode-filter" class="filter-input filter-pin" name="pincode" value="{{ pincode }}" placeholder="PIN code">
+      <button class="button button-primary" type="submit">Search <span>→</span></button>
+    </form>
+    <div class="results-heading"><div><b>{{ result_count }} result{{ result_count|pluralize }}</b><span> · Eligible listings only</span></div><span class="privacy-chip">⌖ Approximate locality</span></div>
+    {% if listings %}
+      <div class="listing-grid">
+      {% for listing in listings %}
+        <article class="listing-card">
+          {% with photo=listing.images.first %}
+            {% if photo %}<img class="listing-photo" src="{{ photo.image.url }}" alt="Packaging photo for {{ listing.name }}" loading="lazy">{% else %}<div class="listing-photo listing-photo-placeholder" aria-hidden="true"><span>✚</span><small>Medicine listing</small></div>{% endif %}
+          {% endwith %}
+          <div class="listing-card-body">
+            <div class="listing-card-top"><span class="status status-approved">Reviewed</span><form method="post" action="{% url 'save_listing' listing.pk %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}"><button class="save-button {% if listing.pk in saved_ids %}is-saved{% endif %}" type="submit" aria-label="{% if listing.pk in saved_ids %}Remove saved medicine{% else %}Save medicine{% endif %}">{% if listing.pk in saved_ids %}♥{% else %}♡{% endif %}</button></form></div>
+            <h2>{{ listing.name }}</h2>
+            <p class="listing-subtitle">{% if listing.brand_name %}{{ listing.brand_name }}{% elif listing.generic_name %}{{ listing.generic_name }}{% else %}Medicine listing{% endif %}</p>
+            <div class="medicine-tags"><span>{{ listing.strength|default:"Strength not listed" }}</span><span>{{ listing.dosage_form|default:"Form not listed" }}</span></div>
+            <div class="listing-meta"><span>⌖ {{ listing.locality|default:listing.city }}, {{ listing.city }}</span><span>⌁ {{ listing.quantity_available }} available</span></div>
+            <div class="listing-meta"><span>Expires {{ listing.expiry_date|date:"M Y" }}</span><span>Updated {{ listing.updated_at|date:"M j" }}</span></div>
+            <a class="button button-outline button-full" href="{% url 'listing_detail' listing.pk %}">View details <span>→</span></a>
+          </div>
+        </article>
+      {% endfor %}
+      </div>
+      {% if result_count > 100 %}<p class="muted result-limit">Showing the first 100 matches. Add a location or medicine filter to narrow your search.</p>{% endif %}
+    {% else %}
+      <div class="empty-state empty-large"><span>⌕</span><h2>No eligible listings found</h2><p>Try another name or location. You can also save a search by adding the medicine to your wishlist when it becomes available.</p><a class="button button-outline" href="{% url 'submit_listing' %}">Submit a medicine instead</a></div>
+    {% endif %}
+    <div class="notice notice-blue discovery-notice"><b>Health and safety note</b><span>Do not start, stop, or substitute medicines based on these listings. Ask a qualified healthcare professional. Eligibility review is not a guarantee of safety or lawful transfer.</span></div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Privacy Notice{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><span class="eyebrow">Privacy by design</span><h1>Privacy Notice</h1><p>Last updated: October 2026</p></div></section>
+<section class="section"><article class="container legal-copy">
+  <h2>Information this MVP collects</h2><p>Registration collects your name, email, optional mobile number and optional city, state and PIN code. Medicine submissions may include packaging photographs, medicine and batch details, expiry dates and broad locality information. The application stores account activity and submitted requests.</p>
+  <h2>How information is used</h2><p>Information is used to operate account access, email verification, listing review, discovery, requests and safety reports. Listing owners’ email addresses, phone numbers and exact home addresses are not displayed in public discovery results. This MVP does not collect precise GPS coordinates.</p>
+  <h2>Storage and access</h2><p>Local development uses a SQLite database and local media folder. Production storage, retention schedules, backups, incident response, access policies and a lawful basis for processing must be established by the deploying organization before launch. Django admin access should be limited to authorized staff.</p>
+  <h2>Your choices and account requests</h2><p>This MVP does not yet include self-service account deletion, full privacy preference controls or a dedicated privacy contact workflow. For a deployed instance, the operator must publish a verified privacy contact and implement appropriate access, correction, retention and deletion processes under applicable law.</p>
+  <h2>Third parties</h2><p>The local email backend prints verification links in the application terminal. No SMS, map, analytics, cloud-storage or third-party tracking integration is configured in this MVP. Configure and assess any future provider before sending personal information to it.</p>
+  <h2>Important</h2><p>This prototype is not a substitute for a privacy impact assessment, legal review or production security assessment. Do not enter sensitive health records, identity documents or precise residential location information.</p>
+</article></section>
+{% endblock %}

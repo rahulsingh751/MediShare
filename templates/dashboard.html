@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Your dashboard{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container page-hero-row"><div><span class="eyebrow">Your MediShare space</span><h1>Good to see you, {{ user.first_name|default:user.email|title }}.</h1><p>One account for giving, discovering and supporting your community.</p></div><a class="button button-primary" href="{% url 'submit_listing' %}">＋ Submit a medicine</a></div>
+</section>
+<section class="section dashboard-section">
+  <div class="container">
+    {% if not user.email_verified %}<div class="notice notice-amber"><div><b>Verify your email to unlock listings and requests.</b><span>Check your inbox, or send a fresh verification link.</span></div><form method="post" action="{% url 'resend_verification' %}">{% csrf_token %}<button class="button button-outline button-small" type="submit">Resend link</button></form></div>{% endif %}
+    <div class="stats-grid">
+      <article class="stat-card"><span class="stat-icon mint">◈</span><span class="stat-label">My submissions</span><b>{{ listing_count }}</b><small>All statuses</small></article>
+      <article class="stat-card"><span class="stat-icon blue">◷</span><span class="stat-label">Awaiting review</span><b>{{ pending_listing_count }}</b><small>Private until review</small></article>
+      <article class="stat-card"><span class="stat-icon peach">↔</span><span class="stat-label">Requests received</span><b>{{ requests_received_count }}</b><small>All statuses</small></article>
+      <article class="stat-card"><span class="stat-icon lavender">♡</span><span class="stat-label">My requests</span><b>{{ requests_submitted_count }}</b><small>{{ completed_count }} completed</small></article>
+    </div>
+    <div class="dashboard-grid">
+      <section class="panel">
+        <div class="panel-heading"><div><span class="eyebrow">Your activity</span><h2>Recent submissions</h2></div><a class="text-link" href="{% url 'my_listings' %}">All listings →</a></div>
+        {% if recent_listings %}<div class="activity-list">{% for listing in recent_listings %}<article class="activity-row"><span class="activity-icon">✚</span><div class="activity-main"><b>{{ listing.name }}{% if listing.strength %} · {{ listing.strength }}{% endif %}</b><small>{{ listing.city }} · {{ listing.created_at|date:"M j, Y" }}</small></div><span class="status status-{{ listing.status }}">{{ listing.get_status_display }}</span></article>{% endfor %}</div>
+        {% else %}<div class="empty-state"><span>◇</span><b>Your community journey starts here.</b><p>Submit information about a medicine for eligibility review.</p><a class="button button-outline button-small" href="{% url 'submit_listing' %}">Add a submission</a></div>{% endif %}
+      </section>
+      <aside class="panel panel-tint"><span class="eyebrow">A helpful reminder</span><h2>Safety is a shared responsibility.</h2><p>Never use a medicine based on a listing or an online message. Ask a qualified healthcare professional, and follow applicable laws.</p><a class="text-link" href="{% url 'landing' %}#safety">Read our safety approach →</a><div class="reminder-mark">+</div></aside>
+    </div>
+    <section class="panel recent-requests">
+      <div class="panel-heading"><div><span class="eyebrow">Keeping track</span><h2>Recent requests</h2></div><a class="text-link" href="{% url 'my_requests' %}">All requests →</a></div>
+      {% if recent_requests %}<div class="activity-list">{% for item in recent_requests %}<article class="activity-row"><span class="activity-icon activity-blue">♡</span><div class="activity-main"><b>{{ item.listing.name }}</b><small>{{ item.created_at|date:"M j, Y" }} · Quantity {{ item.quantity }}</small></div><span class="status status-{{ item.status }}">{{ item.get_status_display }}</span></article>{% endfor %}</div>{% else %}<p class="muted">You have not requested a listing yet.</p>{% endif %}
+    </section>
+  </div>
+</section>
+{% endblock %}

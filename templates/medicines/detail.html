@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ listing.name }}{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container"><a class="back-link" href="{% url 'discover' %}">← Back to discovery</a><span class="eyebrow">Reviewed listing · not medical advice</span><h1>{{ listing.name }}</h1><p>{% if listing.brand_name %}{{ listing.brand_name }} · {% endif %}{{ listing.strength|default:"Strength not listed" }}{% if listing.dosage_form %} · {{ listing.dosage_form }}{% endif %}</p></div></section>
+<section class="section"><div class="container detail-layout">
+  <div class="detail-main">
+    <div class="panel detail-info">
+      <div class="detail-header"><span class="status status-approved">Reviewed for eligibility</span><span class="privacy-chip">⌖ Approximate location</span></div>
+      <div class="detail-facts"><div><small>Generic name</small><b>{{ listing.generic_name|default:"Not provided" }}</b></div><div><small>Active ingredient</small><b>{{ listing.active_ingredient|default:"Not provided" }}</b></div><div><small>Manufacturer</small><b>{{ listing.manufacturer|default:"Not provided" }}</b></div><div><small>Dosage form</small><b>{{ listing.dosage_form|default:"Not provided" }}</b></div><div><small>Available quantity</small><b>{{ listing.quantity_available }}</b></div><div><small>Expiry date</small><b>{{ listing.expiry_date|date:"F j, Y" }}</b></div><div><small>Batch number</small><b>{{ listing.batch_number|default:"Not provided" }}</b></div><div><small>Approximate area</small><b>{{ listing.locality|default:listing.city }}, {{ listing.city }}</b></div></div>
+      {% if listing.composition %}<div class="detail-description"><h2>Composition details</h2><p>{{ listing.composition|linebreaksbr }}</p></div>{% endif %}
+      {% if listing.images.all %}<div class="detail-photos"><h2>Packaging photos</h2><div class="photo-grid">{% for image in listing.images.all %}<a href="{{ image.image.url }}" target="_blank" rel="noopener"><img src="{{ image.image.url }}" alt="{{ image.caption|default:'Packaging photo' }}"></a>{% endfor %}</div></div>{% endif %}
+    </div>
+    <div class="notice notice-amber"><b>Not a safety or medical assessment</b><span>A listing's review status does not establish that it is safe for you or authorize a transfer. Ask a qualified healthcare professional before making any medicine decision.</span></div>
+  </div>
+  <aside class="detail-side">
+    <div class="panel request-panel"><span class="eyebrow">Interested?</span><h2>Request a review.</h2><p>Requests go to an authorized review queue. This is not a reservation or permission to transfer.</p>
+      {% if listing.owner_id == user.id %}<div class="notice notice-blue">This is your listing.</div>
+      {% elif not request_workflows_enabled %}<div class="notice notice-amber"><b>Requests are not active yet.</b><span>Request workflows remain disabled until the applicable legal and professional review is complete.</span></div>
+      {% else %}<form method="post" class="form-stack">{% csrf_token %}{% for field in form %}<div class="field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.errors %}<div class="field-error">{{ field.errors }}</div>{% endif %}</div>{% endfor %}<button class="button button-primary button-full" name="request_medicine" value="1" type="submit">Send review request <span>→</span></button></form>{% endif %}
+      <form method="post" action="{% url 'save_listing' listing.pk %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}"><button class="button button-outline button-full" type="submit">{% if saved %}♥ Saved — remove{% else %}♡ Save this listing{% endif %}</button></form>
+      <a class="text-link report-link" href="{% url 'report_listing' listing.pk %}">Report a safety concern</a>
+    </div>
+    <div class="privacy-copy">The member's address and contact information are private. Handover details are not shared by this page.</div>
+  </aside>
+</div></section>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Submit medicine information{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container"><span class="eyebrow">Share responsibly</span><h1>Submit medicine information.</h1><p>Your submission is private until reviewed. Complete information helps the authorized review process.</p></div>
+</section>
+<section class="section form-page"><div class="container form-layout">
+  <form method="post" enctype="multipart/form-data" class="panel listing-form">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="form-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+    <fieldset><legend>Medicine details</legend><p class="fieldset-note">Enter details exactly as shown on the packaging. Do not guess missing information.</p>
+      <div class="form-grid">{% for field in form %}
+        {% if field.name == "images" %}{% else %}
+        <div class="field {% if field.name == 'composition' or field.name == 'handover_preference' %}field-full{% endif %}">
+          {% if field.field.widget.input_type == "checkbox" %}<label class="checkbox-label">{{ field }}<span>{{ field.label }}</span></label>
+          {% else %}<label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="required-mark"> *</span>{% endif %}</label>{{ field }}{% endif %}
+          {% if field.help_text %}<small class="field-help">{{ field.help_text }}</small>{% endif %}{% if field.errors %}<div class="field-error" role="alert">{{ field.errors }}</div>{% endif %}
+        </div>
+        {% endif %}
+      {% endfor %}</div>
+    </fieldset>
+    <fieldset><legend>Packaging photos</legend><p class="fieldset-note">Photos support review but do not prove safety. Avoid including people, prescriptions or personal documents.</p>
+      <div class="field"><label for="id_images">Add up to five photos</label><input id="id_images" name="images" type="file" accept="image/jpeg,image/png,image/webp" multiple><small class="field-help">JPG, PNG or WebP; up to 5 MB each. Preview before upload.</small><div class="image-preview" id="image-preview" aria-live="polite"></div></div>
+    </fieldset>
+    <div class="notice notice-amber"><b>Review is not a guarantee.</b><span>Prescription, controlled, expired, opened, damaged, incorrectly stored and cold-chain medicines are restricted. Do not submit a medicine for transfer unless a qualified reviewer confirms a legally permitted pathway.</span></div>
+    <button class="button button-primary button-full" type="submit">Submit for eligibility review <span>→</span></button>
+  </form>
+  <aside class="form-aside"><div class="panel panel-tint"><span class="eyebrow">What happens next?</span><h2>A careful review, not an instant listing.</h2><ol class="timeline"><li><span>1</span><div><b>We receive your details</b><small>Your submission remains private.</small></div></li><li><span>2</span><div><b>An authorized reviewer checks it</b><small>Photos alone cannot establish safety.</small></div></li><li><span>3</span><div><b>Eligible listings may appear</b><small>Local law and professional review still apply.</small></div></li></ol></div><p class="privacy-copy">Your exact address and precise coordinates are never collected or shown to other members.</p></aside>
+</div></section>
+{% endblock %}

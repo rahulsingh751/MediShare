@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+<section class="auth-section">
+  <div class="auth-card">
+    <span class="eyebrow">Welcome back</span><h1>Log in to MediShare</h1>
+    <p>Continue your community care journey.</p>
+    <form method="post" class="form-stack">
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="form-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+      {% for field in form %}
+        <div class="field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.errors %}<div class="field-error" role="alert">{{ field.errors }}</div>{% endif %}</div>
+      {% endfor %}
+      <button class="button button-primary button-full" type="submit">Log in securely <span>→</span></button>
+    </form>
+    <div class="auth-links"><a href="{% url 'password_reset' %}">Forgot password?</a><span>New here? <a href="{% url 'register' %}">Create an account</a></span></div>
+  </div>
+</section>
+{% endblock %}

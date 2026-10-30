@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}My listings{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="container page-hero-row"><div><span class="eyebrow">Your submissions</span><h1>My listings</h1><p>Track submissions and review outcomes.</p></div><a class="button button-primary" href="{% url 'submit_listing' %}">＋ Submit medicine</a></div></section>
+<section class="section"><div class="container">
+  {% if listings %}<div class="panel table-panel"><div class="responsive-table"><table><thead><tr><th>Medicine</th><th>Location</th><th>Quantity</th><th>Expiry</th><th>Status</th><th>Action</th></tr></thead><tbody>
+  {% for listing in listings %}<tr><td><b>{{ listing.name }}</b><small>{% if listing.brand_name %}{{ listing.brand_name }} · {% endif %}{{ listing.strength }}</small></td><td>{{ listing.city }}<small>{{ listing.pincode }}</small></td><td>{{ listing.quantity_available }}</td><td>{{ listing.expiry_date|date:"M j, Y" }}</td><td><span class="status status-{{ listing.status }}">{{ listing.get_status_display }}</span>{% if listing.reviewer_notes %}<small class="status-note">{{ listing.reviewer_notes }}</small>{% endif %}</td><td>{% if listing.status == "submitted" or listing.status == "under_review" or listing.status == "approved" or listing.status == "restricted" or listing.status == "rejected" %}<form method="post" action="{% url 'withdraw_listing' listing.pk %}" data-confirm="Withdraw this listing?">{% csrf_token %}<button class="button button-quiet button-small" type="submit">Withdraw</button></form>{% else %}—{% endif %}</td></tr>{% endfor %}
+  </tbody></table></div></div>{% else %}<div class="empty-state empty-large"><span>◈</span><h2>No submissions yet</h2><p>Your medicine submissions and their review statuses will appear here.</p><a class="button button-primary" href="{% url 'submit_listing' %}">Submit a medicine</a></div>{% endif %}
+</div></section>
+{% endblock %}
